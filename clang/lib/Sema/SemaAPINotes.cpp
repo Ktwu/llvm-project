@@ -114,7 +114,7 @@ static void applyNullability(Sema &S, Decl *decl, NullabilityKind nullability,
     // Make it a property attribute if we can.
     if (!isMultiLevelPointerType(type)) {
       property->setPropertyAttributes(
-        ObjCPropertyDecl::OBJC_PR_null_resettable);
+        ObjCPropertyAttribute::kind_null_resettable);
     }
   } else {
     llvm_unreachable("cannot handle nullability here");
@@ -194,7 +194,7 @@ namespace {
       }
     }
   }
-  
+
   template<typename A>
   void handleAPINotedAttribute(
          Sema &S, Decl *D, bool shouldAddAttribute,
@@ -314,7 +314,7 @@ static void ProcessAPINotes(Sema &S, Decl *D,
     handleAPINotedAttribute<SwiftNameAttr>(S, D, true, metadata,
                                            [&]() -> SwiftNameAttr * {
       auto &APINoteName = S.getASTContext().Idents.get("SwiftName API Note");
-      
+
       if (!S.DiagnoseSwiftName(D, info.SwiftName, D->getLocation(),
                                &APINoteName)) {
         return nullptr;
@@ -733,7 +733,7 @@ static void ProcessAPINotes(Sema &S, ObjCInterfaceDecl *D,
 /// attribute only applies to the active version of \p D, not to all versions.
 ///
 /// This must be run \em before processing API notes for \p D, because otherwise
-/// any existing SwiftName attribute will have been packaged up in a 
+/// any existing SwiftName attribute will have been packaged up in a
 /// SwiftVersionedAttr.
 template <typename SpecificInfo>
 static void maybeAttachUnversionedSwiftName(
@@ -957,7 +957,7 @@ void Sema::ProcessAPINotes(Decl *D) {
         if (auto Context = GetContext(Reader)) {
           bool isInstanceProperty =
             (Property->getPropertyAttributesAsWritten() &
-               ObjCPropertyDecl::OBJC_PR_class) == 0;
+               ObjCPropertyAttribute::kind_class) == 0;
           auto Info = Reader->lookupObjCProperty(*Context, Property->getName(),
                                                  isInstanceProperty);
           ProcessVersionedAPINotes(*this, Property, Info);
